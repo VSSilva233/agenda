@@ -19,6 +19,7 @@ public class ControlePersistencia extends WindowAdapter {
     private final DefaultListModel<Contato> contatos;
 
     public ControlePersistencia(DefaultListModel<Contato> contatos) {
+        System.out.println(contatos);
         this.contatos = contatos;
     }
 
@@ -32,6 +33,8 @@ public class ControlePersistencia extends WindowAdapter {
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ControlePersistencia.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println(this.contatos);
+
     }
 
     @Override

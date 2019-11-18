@@ -6,11 +6,16 @@ public class Contato implements Serializable {
     private String nome;
     private String telefone;
     private String detalhes;
+    private String enderecoResidencial;
+    private String enderecoComercial;
 
     public Contato() {
         nome = "Novo Contato";
         telefone = "";
         detalhes = "";
+        enderecoComercial = "";
+        enderecoResidencial = "";
+
     }
 
     public String getNome() {
@@ -35,6 +40,22 @@ public class Contato implements Serializable {
 
     public void setDetalhes(String detalhes) {
         this.detalhes = detalhes;
+    }
+
+    public String getEnderecoResidencial() {
+        return this.enderecoResidencial;
+    }
+
+    public void setEnderecoResidencial(String detalhes) {
+        this.enderecoResidencial = enderecoResidencial;
+    }
+
+    public String getEnderecoComerial() {
+        return this.enderecoComercial;
+    }
+
+    public void setEnderecoComercial(String enderecoComercial) {
+        this.enderecoComercial = enderecoComercial;
     }
 
     @Override

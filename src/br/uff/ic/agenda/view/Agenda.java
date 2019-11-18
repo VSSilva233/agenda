@@ -8,6 +8,8 @@ import br.uff.ic.agenda.controller.ControleSalvar;
 import br.uff.ic.agenda.model.Contato;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -21,6 +23,10 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class Agenda extends JFrame {
     
@@ -31,23 +37,24 @@ public class Agenda extends JFrame {
     private final JList<Contato> listaContatos = new JList<>(contatos);
     private final JTextField campoNome = new JTextField();
     private final JTextField campoTelefone = new JTextField();
+    private final JTextField campoEnderecoComercial = new JTextField();
+    private final JTextField campoEnderecoResidencial = new JTextField();
     private final JTextArea campoDetalhes = new JTextArea();
-    
+    JPanel painelLista = new JPanel(new BorderLayout());
+
     public Agenda() {
         super("Agenda");        
         montaJanela();
     }
-    
-    private void montaJanela() {        
+
+    private void montaJanela() {
         // Criando um painel com a lista de contatos
-        JPanel painelLista = new JPanel(new BorderLayout());
-        painelLista.setBorder(BorderFactory.createTitledBorder("Contatos"));
         listaContatos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         painelLista.add(new JScrollPane(listaContatos), BorderLayout.CENTER);
         
         // Criando um painel com os botões sob a lista
-        JButton botaoAdicionar = new JButton(new ImageIcon(getClass().getResource(ICONE_ADICIONA)));
-        JButton botaoRemover = new JButton(new ImageIcon(getClass().getResource(ICONE_REMOVE)));
+        JButton botaoAdicionar = new JButton("Adicionar");
+        JButton botaoRemover = new JButton("Remover");
         JPanel painelBotoes = new JPanel(new GridLayout(1, 2));
         painelBotoes.add(botaoAdicionar);
         painelBotoes.add(botaoRemover);
@@ -58,7 +65,19 @@ public class Agenda extends JFrame {
         painelNome.add(new JLabel("Nome:"), BorderLayout.WEST); 
         campoNome.setEnabled(false);
         painelNome.add(campoNome, BorderLayout.CENTER);
-        
+
+        // Criando um painel com o nome
+        JPanel painelEnderecoComercial = new JPanel(new BorderLayout());
+        painelEnderecoComercial.add(new JLabel("Endereco comercial:"), BorderLayout.WEST);
+        campoEnderecoComercial.setEnabled(false);
+        painelEnderecoComercial.add(campoEnderecoComercial, BorderLayout.CENTER);
+
+        // Criando um painel com o nome
+        JPanel painelEnderecoResidencial = new JPanel(new BorderLayout());
+        painelEnderecoResidencial.add(new JLabel("Endereco Residencial:"), BorderLayout.WEST);
+        campoEnderecoResidencial.setEnabled(false);
+        painelEnderecoResidencial.add(campoEnderecoResidencial, BorderLayout.CENTER);
+
         // Criando um painel com o telefone
         JPanel painelTelefone = new JPanel(new BorderLayout());
         painelTelefone.add(new JLabel("Telefone:"), BorderLayout.WEST);
@@ -66,10 +85,12 @@ public class Agenda extends JFrame {
         painelTelefone.add(campoTelefone, BorderLayout.CENTER);
         
         // Criando um painel que contem tanto o nome quanto o telefone
-        JPanel painelCampos = new JPanel(new GridLayout(2, 1));
+        JPanel painelCampos = new JPanel(new GridLayout(5, 2));
         painelCampos.add(painelNome);
         painelCampos.add(painelTelefone);
-        
+        painelCampos.add(painelEnderecoComercial);
+        painelCampos.add(painelEnderecoResidencial);
+
         // Criando um painel com os detalhes
         JPanel painelDetalhes = new JPanel(new BorderLayout());
         painelDetalhes.setBorder(BorderFactory.createTitledBorder("Detalhes"));
@@ -87,14 +108,34 @@ public class Agenda extends JFrame {
         this.setContentPane(painelPrincipal);
 
         // Configurando os listeners
-        listaContatos.addListSelectionListener(new ControleCarregar(listaContatos, campoNome, campoTelefone, campoDetalhes));
-        botaoAdicionar.addActionListener(new ControleAdicionar(contatos)); 
+        listaContatos.addListSelectionListener(new ControleCarregar(listaContatos, campoNome, campoTelefone, campoDetalhes, campoEnderecoComercial, campoEnderecoResidencial));
+        botaoAdicionar.addActionListener(new ControleAdicionar(contatos, painelLista));
         botaoRemover.addActionListener(new ControleRemover(listaContatos, contatos));
-        ControleSalvar salvar = new ControleSalvar(listaContatos, campoNome, campoTelefone, campoDetalhes);
+        ControleSalvar salvar = new ControleSalvar(listaContatos, campoNome, campoTelefone, campoDetalhes, campoEnderecoComercial, campoEnderecoResidencial);
         campoNome.addKeyListener(salvar);
         campoTelefone.addKeyListener(salvar);
         campoDetalhes.addKeyListener(salvar);
         this.addWindowListener(new ControlePersistencia(contatos));
+
+        contatos.addListDataListener(new ListDataListener() {
+            @Override
+            public void intervalAdded(ListDataEvent listDataEvent) {
+                System.out.println("Oi");
+                Agenda.this.painelLista.setBorder(BorderFactory.createTitledBorder("Contatos " + listaContatos.getModel().getSize()));
+            }
+
+            @Override
+            public void intervalRemoved(ListDataEvent listDataEvent) {
+                System.out.println("Oi");
+                Agenda.this.painelLista.setBorder(BorderFactory.createTitledBorder("Contatos " + listaContatos.getModel().getSize()));
+            }
+
+            @Override
+            public void contentsChanged(ListDataEvent listDataEvent) {
+                System.out.println("Oi");
+                Agenda.this.painelLista.setBorder(BorderFactory.createTitledBorder("Contatos " + listaContatos.getModel().getSize()));
+            }
+        });
 
         // Configuration a janela
         this.pack();
