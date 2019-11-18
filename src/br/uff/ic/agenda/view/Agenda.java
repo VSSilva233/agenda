@@ -10,19 +10,11 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
@@ -55,9 +47,11 @@ public class Agenda extends JFrame {
         // Criando um painel com os botões sob a lista
         JButton botaoAdicionar = new JButton("Adicionar");
         JButton botaoRemover = new JButton("Remover");
-        JPanel painelBotoes = new JPanel(new GridLayout(1, 2));
+        JButton botaoOrdenar = new JButton("Ordernar");
+        JPanel painelBotoes = new JPanel(new GridLayout(1, 3));
         painelBotoes.add(botaoAdicionar);
         painelBotoes.add(botaoRemover);
+        painelBotoes.add(botaoOrdenar);
         painelLista.add(painelBotoes, BorderLayout.SOUTH);
                         
         // Criando um painel com o nome
@@ -85,7 +79,7 @@ public class Agenda extends JFrame {
         painelTelefone.add(campoTelefone, BorderLayout.CENTER);
         
         // Criando um painel que contem tanto o nome quanto o telefone
-        JPanel painelCampos = new JPanel(new GridLayout(5, 2));
+        JPanel painelCampos = new JPanel(new GridLayout(5, 1));
         painelCampos.add(painelNome);
         painelCampos.add(painelTelefone);
         painelCampos.add(painelEnderecoComercial);
@@ -111,6 +105,26 @@ public class Agenda extends JFrame {
         listaContatos.addListSelectionListener(new ControleCarregar(listaContatos, campoNome, campoTelefone, campoDetalhes, campoEnderecoComercial, campoEnderecoResidencial));
         botaoAdicionar.addActionListener(new ControleAdicionar(contatos, painelLista));
         botaoRemover.addActionListener(new ControleRemover(listaContatos, contatos));
+
+        botaoOrdenar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                ListModel contatosModels = listaContatos.getModel();
+                List contatos = new ArrayList<Contato>();
+                for (int i = 0; i < contatosModels.getSize(); i++) {
+                    contatos.add(contatosModels.getElementAt(i));
+                }
+                Collections.reverse(contatos);
+
+                DefaultListModel newListModel = new DefaultListModel();
+                for(int i = 0; i < contatos.size(); i++) {
+                    newListModel.addElement(contatos.get(i));
+                }
+
+                listaContatos.setModel(newListModel);
+            }
+        });
+
         ControleSalvar salvar = new ControleSalvar(listaContatos, campoNome, campoTelefone, campoDetalhes, campoEnderecoComercial, campoEnderecoResidencial);
         campoNome.addKeyListener(salvar);
         campoTelefone.addKeyListener(salvar);
