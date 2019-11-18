@@ -48,7 +48,9 @@ public class Agenda extends JFrame {
         JButton botaoAdicionar = new JButton("Adicionar");
         JButton botaoRemover = new JButton("Remover");
         JButton botaoOrdenar = new JButton("Ordernar");
-        JPanel painelBotoes = new JPanel(new GridLayout(1, 3));
+        JTextField campoPesquisar = new JTextField();
+        JPanel painelBotoes = new JPanel(new GridLayout(4, 1));
+        painelBotoes.add(campoPesquisar);
         painelBotoes.add(botaoAdicionar);
         painelBotoes.add(botaoRemover);
         painelBotoes.add(botaoOrdenar);
@@ -125,6 +127,18 @@ public class Agenda extends JFrame {
             }
         });
 
+        campoPesquisar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                for (int i=0; i < listaContatos.getModel().getSize(); i++) {
+                    if (campoPesquisar.getText().equals(listaContatos.getModel().getElementAt(i).getNome()  )) {
+                        listaContatos.setSelectedIndex(i);
+                        new ControleCarregar(listaContatos, campoNome, campoTelefone, campoDetalhes, campoEnderecoComercial, campoEnderecoResidencial);
+                    }
+                }
+            }
+        });
+
         ControleSalvar salvar = new ControleSalvar(listaContatos, campoNome, campoTelefone, campoDetalhes, campoEnderecoComercial, campoEnderecoResidencial);
         campoNome.addKeyListener(salvar);
         campoTelefone.addKeyListener(salvar);
@@ -134,7 +148,6 @@ public class Agenda extends JFrame {
         contatos.addListDataListener(new ListDataListener() {
             @Override
             public void intervalAdded(ListDataEvent listDataEvent) {
-                System.out.println("Oi");
                 Agenda.this.painelLista.setBorder(BorderFactory.createTitledBorder("Contatos " + listaContatos.getModel().getSize()));
             }
 
